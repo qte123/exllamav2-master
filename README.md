@@ -48,8 +48,15 @@ python test_inference.py -m <path_to_model> -p "Once upon a time,"
 
 A simple console chatbot is included. Run it with:
 
-```
-python examples/chat.py -m <path_to_model> -mode llama
+-gs 15,15,15,15（四个GPU核心，每个显存16G）
+
+```shell
+# 控制台
+python examples/chat.py -m <path_to_model> -mode llama -gs 15,15,15,15
+# api服务器
+python examples/chat_server.py -m <path_to_model> -mode llama -gs 15,15,15,15
+# websocket服务器
+python examples/chat_websockets.py -m <path_to_model> -mode llama -gs 15,15,15,15
 ```
 
 For a chat with colored code, run:
