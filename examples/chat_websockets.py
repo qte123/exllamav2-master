@@ -440,7 +440,7 @@ def create_plot(outputs, max_token, name,is_gpu=True):
     # 设置y轴的范围
     y_time_length = [0,150]
     y_tps_length=[0,16]
-    y_wps_length=[0,40]
+    y_wps_length=[0,50]
 
     # 创建图像
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
@@ -772,7 +772,7 @@ async def chat_websocket(websocket: WebSocket, request: ChatRequest):
             }
             outputs.append(output)
             await websocket.send_json(message)
-        create_plot(outputs, 1000, "exllama-70B")
+        create_plot(outputs, 1000, "exllama-70B",is_gpu=True)
     except websockets.ConnectionClosedOK:
         print(f"WebSocket connection closed for {username}")
         ##############################
