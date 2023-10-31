@@ -413,7 +413,7 @@ def get_word_per_second(chunks, elapsed_time):
 
 
 # 数据处理和曲线绘制
-def create_plot(outputs, max_token, name):
+def create_plot(outputs, max_token, name,is_gpu=True):
     # 指定 data 文件夹的路径
     data_folder_plt = "data/plt"
     # 生成带有时间戳的文件名
@@ -437,21 +437,27 @@ def create_plot(outputs, max_token, name):
 
     # 设置x轴的范围
     x_length = [min_token_length, max_token]
+    # 设置y轴的范围
+    y_time_length = [0,150]
+    y_tps_length=[0,16]
+    y_wps_length=[0,40]
 
     # 创建图像
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
-
     # 指定需要标注的 x 坐标
     x_ticks = np.arange(0, max_token + 1, 100)
-
+    #指定需要标注的x的坐标
+    x_ticks_ = np.arange(0, max_token + 1, 200)
     # 使用 numpy 的 isin 函数筛选出满足条件的数据点下标
     indices = np.isin(token_length, x_ticks)
     selected_x = token_length[indices]
-
+    indices_ = np.isin(token_length, x_ticks_)
+    selected_x_ = token_length[indices_]
     # 绘制 "spend_time" 的曲线图
     ax1.plot(token_length, spend_times, marker="", linestyle="-", color="b")
     # 获取满足条件的 x 坐标及对应的 y 坐标
     selected_y_time = spend_times[indices]
+    selected_y_time_ = spend_times[indices_]
     for x, y in zip(selected_x, selected_y_time):
         ax1.annotate(
             f"{y:.2f}",
@@ -461,6 +467,15 @@ def create_plot(outputs, max_token, name):
             ha="center",
         )
         ax1.scatter(x, y, color="black")  # 添加散点图，用红色表示
+    # 标注曲线的最后一个点
+    ax1.annotate(
+        f"{spend_times.iloc[-1]:.2f}",
+        (token_length.iloc[-1], spend_times.iloc[-1]),
+        textcoords="offset points",
+        xytext=(0, 10),
+        ha="center",
+    )
+    ax1.scatter(token_length.iloc[-1], spend_times.iloc[-1], color="black")
     ax1.set_xlabel("Token Length")
     ax1.set_ylabel("Spend Time")
     ax1.set_title("Spend Time by Token Length")
@@ -469,10 +484,12 @@ def create_plot(outputs, max_token, name):
     ax1.set_xlim(x_length)
     # 设置 x 轴刻度的间隔
     ax1.set_xticks(x_ticks)
+    ax1.set_ylim(y_time_length)
 
     # 绘制 "token_efficiency" 的曲线图
     ax2.plot(token_length, token_per_second, marker="", linestyle="-", color="r")
     selected_y_efficiencies = token_per_second[indices]
+    selected_y_efficiencies_ = token_per_second[indices_]
     for x, y in zip(selected_x, selected_y_efficiencies):
         ax2.annotate(
             f"{y:.2f}",
@@ -482,6 +499,14 @@ def create_plot(outputs, max_token, name):
             ha="center",
         )
         ax2.scatter(x, y, color="black")  # 添加散点图，用红色表示
+    ax2.annotate(
+    f"{token_per_second.iloc[-1]:.2f}",
+    (token_length.iloc[-1], token_per_second.iloc[-1]),
+    textcoords="offset points",
+    xytext=(0, 10),
+    ha="center",
+    )
+    ax2.scatter(token_length.iloc[-1], token_per_second.iloc[-1], color="black")
     ax2.set_xlabel("Token Length")
     ax2.set_ylabel("Token per second (TPS)")
     ax2.set_title("Token per second (TPS) by Token Length")
@@ -490,10 +515,12 @@ def create_plot(outputs, max_token, name):
     ax2.set_xlim(x_length)
     # 设置 x 轴刻度的间隔
     ax2.set_xticks(x_ticks)
+    ax2.set_ylim(y_tps_length)
 
     # 绘制 "token_aver_efficiency" 的曲线图
     ax3.plot(token_length, word_per_second, marker="", linestyle="-", color="g")
     selected_y_aver_efficiencies = word_per_second[indices]
+    selected_y_aver_efficiencies_ = word_per_second[indices_]
     for x, y in zip(selected_x, selected_y_aver_efficiencies):
         ax3.annotate(
             f"{y:.2f}",
@@ -503,6 +530,14 @@ def create_plot(outputs, max_token, name):
             ha="center",
         )
         ax3.scatter(x, y, color="black")  # 添加散点图，用红色表示
+    ax3.annotate(
+    f"{word_per_second.iloc[-1]:.2f}",
+    (token_length.iloc[-1], word_per_second.iloc[-1]),
+    textcoords="offset points",
+    xytext=(0, 10),
+    ha="center",
+    )
+    ax3.scatter(token_length.iloc[-1], word_per_second.iloc[-1], color="black")
     ax3.set_xlabel("Token Length")
     ax3.set_ylabel("Word per second (WPS)")
     ax3.set_title("Word per second (WPS) by Token Length")
@@ -511,15 +546,24 @@ def create_plot(outputs, max_token, name):
     ax3.set_xlim(x_length)
     # 设置 x 轴刻度的间隔
     ax3.set_xticks(x_ticks)
+    ax3.set_ylim(y_wps_length)
+    
 
     plt.subplots_adjust(wspace=0.4)
-    num_gpus = torch.cuda.device_count()
     # 设置总标题
-    fig.suptitle(
+    if is_gpu:
+        num_gpus = torch.cuda.device_count()
+        fig.suptitle(
         f"{name}(GPUS{num_gpus}) Generation Efficiency",
         fontsize=16,
         fontweight="bold",
     )
+    else:
+        fig.suptitle(
+            f"{name}(ONLY CPU) Generation Efficiency",
+            fontsize=16,
+            fontweight="bold",
+        )
 
     # 生成带有时间戳的文件名
     png_filename = f"{name}_{filename}_gpus{num_gpus}.png"
