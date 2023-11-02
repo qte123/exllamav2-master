@@ -820,9 +820,9 @@ async def chat_websocket(websocket: WebSocket, request: ChatRequest):
             await websocket.send_json(message)
         num_gpus = torch.cuda.device_count()
         if num_gpus > 0:
-            create_plot(outputs, 1000, "Exllama2-70B-chat",is_gpu=True)
+            create_plot(outputs, 1000, "Llama2-70B-chat-exl2",is_gpu=True)
         else:
-            create_plot(outputs, 1000, "Exllama2-70B-chat",is_gpu=False)
+            create_plot(outputs, 1000, "Llama2-70B-chat-exl2",is_gpu=False)
     except websockets.ConnectionClosedOK:
         print(f"WebSocket connection closed for {username}")
         ##############################
