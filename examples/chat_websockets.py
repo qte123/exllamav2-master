@@ -500,7 +500,7 @@ def create_plot(outputs, max_token, name,is_gpu=True):
     ax1.set_xlim(x_length)
     # 设置 x 轴刻度的间隔
     ax1.set_xticks(x_ticks)
-    ax1.set_ylim(y_time_length)
+    # ax1.set_ylim(y_time_length)
 
     # 绘制 "token_efficiency" 的曲线图
     ax2.plot(token_length, token_per_second, marker="", linestyle="-", color="r")
@@ -545,7 +545,7 @@ def create_plot(outputs, max_token, name,is_gpu=True):
     ax2.set_xlim(x_length)
     # 设置 x 轴刻度的间隔
     ax2.set_xticks(x_ticks)
-    ax2.set_ylim(y_tps_length)
+    # ax2.set_ylim(y_tps_length)
 
     # 绘制 "token_aver_efficiency" 的曲线图
     ax3.plot(token_length, word_per_second, marker="", linestyle="-", color="g")
@@ -591,7 +591,7 @@ def create_plot(outputs, max_token, name,is_gpu=True):
     ax3.set_xlim(x_length)
     # 设置 x 轴刻度的间隔
     ax3.set_xticks(x_ticks)
-    ax3.set_ylim(y_wps_length)
+    # ax3.set_ylim(y_wps_length)
     
 
     plt.subplots_adjust(wspace=0.4)
@@ -822,7 +822,7 @@ async def chat_websocket(websocket: WebSocket, request: ChatRequest):
         if num_gpus > 0:
             create_plot(outputs, 1000, "Exllama2-70B-chat",is_gpu=True)
         else:
-            create_plot(outputs, 1000, "Exllama2-70B-chat",is_gpu=False
+            create_plot(outputs, 1000, "Exllama2-70B-chat",is_gpu=False)
     except websockets.ConnectionClosedOK:
         print(f"WebSocket connection closed for {username}")
         ##############################
