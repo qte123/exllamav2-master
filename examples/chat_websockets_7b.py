@@ -434,13 +434,16 @@ def create_plot(outputs, max_token, name,is_gpu=True):
     # 获取数据中的最小值和最大值
     min_token_length = np.min(token_length)
     max_token_length = np.max(token_length)
+    max_spend_time = np.max(spend_times)
+    max_token_per_second = np.max(token_per_second)
+    max_word_per_second = np.max(word_per_second)
 
     # 设置x轴的范围
     x_length = [min_token_length, max_token]
     # 设置y轴的范围
-    y_time_length = [0,150]
-    y_tps_length=[0,30]
-    y_wps_length=[0,50]
+    y_time_length = [0,max_spend_time]
+    y_tps_length=[0,max_token_per_second]
+    y_wps_length=[0,max_word_per_second]
 
     # 创建图像
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
@@ -818,7 +821,7 @@ async def chat_websocket(websocket: WebSocket, request: ChatRequest):
             }
             outputs.append(output)
             await websocket.send_json(message)
-        create_plot(outputs, 1000, "Exllama2-70B-chat",is_gpu=True)
+        create_plot(outputs, 1000, "Exllama-7B-chat",is_gpu=True)
     except websockets.ConnectionClosedOK:
         print(f"WebSocket connection closed for {username}")
         ##############################
